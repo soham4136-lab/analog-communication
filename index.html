@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amplitude Modulation (AM) Generation & Detection Lab</title>
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-wave-square pulse-icon"></i>
+                <div class="logo-text">
+                    <h1>AM Lab</h1>
+                    <span>Analog Comm</span>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-tab="simulator">
+                    <i class="fa-solid fa-chart-line"></i> Simulator
+                </button>
+                <button class="nav-btn" data-tab="theory-generation">
+                    <i class="fa-solid fa-sliders"></i> AM Generation
+                </button>
+                <button class="nav-btn" data-tab="theory-detection">
+                    <i class="fa-solid fa-bullseye"></i> AM Detection
+                </button>
+                <button class="nav-btn" data-tab="guide">
+                    <i class="fa-solid fa-book-open"></i> Lab Manual
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <span>EE Dept. | Virtual Labs</span>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-title">
+                    <h2>Generation & Detection of Amplitude Modulation</h2>
+                    <p>Interactive educational simulation of AM modulation and diode envelope detection</p>
+                </div>
+                <div class="quick-status">
+                    <span class="status-indicator online"></span> Live Physics Engine
+                </div>
+            </header>
+
+            <!-- TAB 1: SIMULATOR (Default) -->
+            <section id="simulator" class="tab-content active">
+                <div class="dashboard-grid">
+                    
+                    <!-- Control Panel (Left Side) -->
+                    <div class="card control-card">
+                        <div class="card-header">
+                            <i class="fa-solid fa-sliders text-accent"></i>
+                            <h3>Signal Parameters</h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- Modulating Signal Controls -->
+                            <div class="control-group">
+                                <h4 class="group-title text-magenta"><i class="fa-solid fa-music"></i> Modulating (Message) Signal</h4>
+                                
+                                <div class="slider-row">
+                                    <div class="slider-label">
+                                        <span>Amplitude (A<sub>m</sub>)</span>
+                                        <span id="am-val" class="badge bg-magenta">1.0 V</span>
+                                    </div>
+                                    <input type="range" id="input-am" min="0.0" max="5.0" step="0.1" value="2.0">
+                                </div>
+
+                                <div class="slider-row">
+                                    <div class="slider-label">
+                                        <span>Frequency (f<sub>m</sub>)</span>
+                                        <span id="fm-val" class="badge bg-magenta">1.0 Hz</span>
+                                    </div>
+                                    <input type="range" id="input-fm" min="0.2" max="5.0" step="0.1" value="1.0">
+                                </div>
+                            </div>
+
+                            <!-- Carrier Signal Controls -->
+                            <div class="control-group">
+                                <h4 class="group-title text-cyan"><i class="fa-solid fa-bolt"></i> Carrier Signal</h4>
+                                
+                                <div class="slider-row">
+                                    <div class="slider-label">
+                                        <span>Amplitude (A<sub>c</sub>)</span>
+                                        <span id="ac-val" class="badge bg-cyan">2.5 V</span>
+                                    </div>
+                                    <input type="range" id="input-ac" min="1.0" max="5.0" step="0.1" value="2.5">
+                                </div>
+
+                                <div class="slider-row">
+                                    <div class="slider-label">
+                                        <span>Frequency (f<sub>c</sub>)</span>
+                                        <span id="fc-val" class="badge bg-cyan">20 Hz</span>
+                                    </div>
+                                    <input type="range" id="input-fc" min="10" max="80" step="1" value="25">
+                                </div>
+                            </div>
+
+                            <!-- Demodulator (Envelope Detector) Controls -->
+                            <div class="control-group">
+                                <h4 class="group-title text-orange"><i class="fa-solid fa-microchip"></i> Envelope Detector (RC Filter)</h4>
+                                
+                                <div class="slider-row">
+                                    <div class="slider-label">
+                                        <span>Resistance (R)</span>
+                                        <span id="r-val" class="badge bg-orange">300 Ω</span>
+                                    </div>
+                                    <input type="range" id="input-r" min="50" max="2000" step="10" value="350">
+                                </div>
+
+                                <div class="slider-row">
+                                    <div class="slider-label">
+                                        <span>Capacitance (C)</span>
+                                        <span id="c-val" class="badge bg-orange">1.0 µF</span>
+                                    </div>
+                                    <input type="range" id="input-c" min="0.1" max="10.0" step="0.1" value="1.5">
+                                </div>
+                                
+                                <div class="detector-metric">
+                                    <span>Time Constant (τ = RC):</span>
+                                    <strong id="tau-val">0.52 ms</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Oscilloscope Display (Center) -->
+                    <div class="card graph-card">
+                        <div class="card-header graph-header">
+                            <div class="header-left">
+                                <i class="fa-solid fa-desktop text-accent"></i>
+                                <h3>Digital Storage Oscilloscope</h3>
+                            </div>
+                            <div class="graph-actions">
+                                <button id="btn-play" class="btn btn-icon btn-primary" title="Play/Pause">
+                                    <i class="fa-solid fa-pause"></i>
+                                </button>
+                                <button id="btn-reset-time" class="btn btn-icon btn-secondary" title="Reset Wave Trigger">
+                                    <i class="fa-solid fa-rotate-left"></i>
+                                </button>
+                                <button id="btn-toggle-split" class="btn btn-secondary text-sm">
+                                    <i class="fa-solid fa-table-cells-large"></i> Split Channels
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Oscilloscope Screen Container -->
+                        <div class="oscilloscope-wrapper">
+                            <canvas id="oscCanvas"></canvas>
+                            <div class="canvas-glow"></div>
+                        </div>
+
+                        <!-- Graph Signal Selector Checklist -->
+                        <div class="channel-selector-row">
+                            <label class="ch-check ch-magenta">
+                                <input type="checkbox" id="ch-message" checked>
+                                <span class="ch-label">Message Signal m(t)</span>
+                            </label>
+                            <label class="ch-check ch-cyan">
+                                <input type="checkbox" id="ch-carrier">
+                                <span class="ch-label">Carrier Signal c(t)</span>
+                            </label>
+                            <label class="ch-check ch-yellow">
+                                <input type="checkbox" id="ch-am" checked>
+                                <span class="ch-label">AM Modulated s(t)</span>
+                            </label>
+                            <label class="ch-check ch-red">
+                                <input type="checkbox" id="ch-rectified">
+                                <span class="ch-label">Rectified Wave s<sub>r</sub>(t)</span>
+                            </label>
+                            <label class="ch-check ch-orange">
+                                <input type="checkbox" id="ch-demodulated" checked>
+                                <span class="ch-label">Detected Envelope v<sub>d</sub>(t)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Telemetry & Metrics (Right Side) -->
+                    <div class="card telemetry-card">
+                        <div class="card-header">
+                            <i class="fa-solid fa-gauge text-accent"></i>
+                            <h3>Real-Time Telemetry</h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- Modulation Index Gauge -->
+                            <div class="telemetry-item align-center">
+                                <span class="metric-title">Modulation Index (μ)</span>
+                                <div class="gauge-container">
+                                    <div class="gauge-bar" id="mu-gauge"></div>
+                                    <span class="gauge-value" id="mu-val">0.80</span>
+                                </div>
+                                <div class="modulation-state-box" id="mod-state">
+                                    Under-modulation (μ &lt; 1)
+                                </div>
+                            </div>
+
+                            <hr class="divider">
+
+                            <!-- Power Metrics -->
+                            <div class="telemetry-item">
+                                <div class="metric-row">
+                                    <span>Carrier Power (P<sub>c</sub>):</span>
+                                    <strong id="power-pc">3.13 W</strong>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Total Sideband Power (P<sub>s</sub>):</span>
+                                    <strong id="power-ps">1.00 W</strong>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Total Transmitted Power (P<sub>t</sub>):</span>
+                                    <strong id="power-pt">4.13 W</strong>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Transmission Efficiency (η):</span>
+                                    <strong id="power-efficiency" class="text-accent">24.2%</strong>
+                                </div>
+                            </div>
+
+                            <hr class="divider">
+
+                            <!-- Mathematical Expression Summary -->
+                            <div class="telemetry-item">
+                                <span class="metric-title text-sm"><i class="fa-solid fa-square-root-variable"></i> Instantaneous Equation</span>
+                                <div class="equation-box font-mono" id="equation-display">
+                                    s(t) = 2.50[1 + 0.80 cos(2π &times; 1.0t)] cos(2π &times; 25.0t)
+                                </div>
+                            </div>
+
+                            <hr class="divider">
+
+                            <!-- Detector Status / RC Advisor -->
+                            <div class="telemetry-item">
+                                <span class="metric-title text-sm"><i class="fa-solid fa-circle-info"></i> Demodulator RC Check</span>
+                                <div class="advisor-box success" id="advisor-display">
+                                    <i class="fa-solid fa-circle-check"></i> RC time constant is ideal. Demodulator tracks message envelope perfectly.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- TAB 2: AM GENERATION THEORY -->
+            <section id="theory-generation" class="tab-content">
+                <div class="theory-layout">
+                    <div class="card theory-card">
+                        <h2>Amplitude Modulation (AM) Generation</h2>
+                        <hr class="divider">
+                        
+                        <div class="theory-section">
+                            <h3>1. What is Amplitude Modulation?</h3>
+                            <p>Amplitude Modulation is the process in which the amplitude of the high-frequency carrier wave is varied in linear proportion to the instantaneous value of the modulating (message) signal. The frequency and phase of the carrier remain unchanged.</p>
+                            
+                            <div class="formula-block">
+                                <p>Let modulating signal be: <span class="math-inline">m(t) = A<sub>m</sub> cos(2π f<sub>m</sub> t)</span></p>
+                                <p>Let carrier signal be: <span class="math-inline">c(t) = A<sub>c</sub> cos(2π f<sub>c</sub> t)</span></p>
+                                <p>Then the resulting AM wave expression is:</p>
+                                <div class="math-equation">
+                                    s(t) = [A<sub>c</sub> + m(t)] cos(2π f<sub>c</sub> t) <br>
+                                    s(t) = A<sub>c</sub> [1 + μ cos(2π f<sub>m</sub> t)] cos(2π f<sub>c</sub> t)
+                                </div>
+                                <p>Where <strong>μ = A<sub>m</sub> / A<sub>c</sub></strong> is the <strong>Modulation Index</strong> (or modulation depth).</p>
+                            </div>
+                        </div>
+
+                        <div class="theory-section">
+                            <h3>2. Modulation States</h3>
+                            <div class="states-grid">
+                                <div class="state-card under">
+                                    <h4>Under-modulation (μ < 1)</h4>
+                                    <p>Message amplitude is smaller than carrier amplitude. The envelope of the modulated carrier stays strictly above and below the zero-axis. The message can be easily recovered using a cheap envelope detector.</p>
+                                </div>
+                                <div class="state-card critical">
+                                    <h4>Critical Modulation (μ = 1)</h4>
+                                    <p>The modulation envelope touches the zero line precisely. The modulation depth is 100%. This represents the maximum amount of power that can be allocated to sidebands without distortion.</p>
+                                </div>
+                                <div class="state-card over">
+                                    <h4>Over-modulation (μ > 1)</h4>
+                                    <p>Message amplitude is larger than carrier amplitude. The envelope crosses the zero axis, leading to <strong>phase reversals</strong> in the carrier signal. The original envelope is distorted, rendering diode detectors ineffective (envelope clipping/distortion).</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="theory-section">
+                            <h3>3. Methods of AM Generation</h3>
+                            <div class="generator-methods">
+                                <div class="method-card">
+                                    <h4><i class="fa-solid fa-bolt"></i> Square-Law Modulator</h4>
+                                    <p>Suitable for low power generation. Uses a non-linear device (like a diode or FET operating in its quadratic region) combined with a bandpass filter centered at f<sub>c</sub>.</p>
+                                    <div class="flowchart">
+                                        <div class="flow-step">m(t) + c(t)</div>
+                                        <div class="flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                        <div class="flow-step">Non-Linear Device<br>v<sub>out</sub> = a<sub>1</sub>v<sub>in</sub> + a<sub>2</sub>v<sub>in</sub><sup>2</sup></div>
+                                        <div class="flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                        <div class="flow-step">Bandpass Filter (at f<sub>c</sub>)</div>
+                                        <div class="flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                        <div class="flow-step">AM Wave s(t)</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="method-card">
+                                    <h4><i class="fa-solid fa-toggle-on"></i> Switching Modulator</h4>
+                                    <p>High-power modulation scheme. The carrier signal acts as a switching command that drives a diode bridge or transistor between conducting (ON) and non-conducting (OFF) states, chopping the modulating signal. Passing this chopped signal through a bandpass filter recovers the AM wave.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: AM DETECTION THEORY -->
+            <section id="theory-detection" class="tab-content">
+                <div class="theory-layout">
+                    <div class="card theory-card">
+                        <h2>Amplitude Modulation (AM) Detection (Demodulation)</h2>
+                        <hr class="divider">
+
+                        <div class="theory-section">
+                            <h3>1. The Envelope Detector Circuit</h3>
+                            <p>The simplest and most widely used method to demodulate an AM wave is the <strong>Envelope Detector</strong> (or Diode Detector). It is a passive circuit consisting of a diode and a low-pass RC filter. It requires no local carrier synchronization, making AM receivers simple and inexpensive.</p>
+                            
+                            <div class="circuit-container">
+                                <div class="circuit-diagram">
+                                    <!-- Embedded CSS diagram or description -->
+                                    <div class="circuit-nodes">
+                                        <div class="circuit-box">AM Input s(t)</div>
+                                        <div class="wire-line"></div>
+                                        <div class="diode-symbol">
+                                            <i class="fa-solid fa-play"></i>
+                                            <div class="diode-bar"></div>
+                                        </div>
+                                        <div class="wire-line"></div>
+                                        <div class="circuit-node">
+                                            <div class="branch-vertical">
+                                                <div class="component-box">Capacitor C</div>
+                                                <div class="component-box">Resistor R</div>
+                                            </div>
+                                        </div>
+                                        <div class="wire-line"></div>
+                                        <div class="circuit-box">Demodulated Output v<sub>d</sub>(t)</div>
+                                    </div>
+                                    <span class="caption">Standard Envelope Detector Circuit Layout</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="theory-section">
+                            <h3>2. Circuit Operation Step-by-Step</h3>
+                            <ol class="step-list">
+                                <li>
+                                    <strong>Positive Half Cycles:</strong> When the input voltage exceeds the capacitor voltage, the diode is forward-biased (ON). The capacitor charges rapidly through the forward resistance of the diode, tracking the peak of the carrier voltage.
+                                </li>
+                                <li>
+                                    <strong>Negative Half Cycles:</strong> When the input voltage drops below the capacitor voltage, the diode becomes reverse-biased (OFF). The capacitor discharges slowly through the resistor R. The rate of discharge is governed by the time constant <strong>τ = RC</strong>.
+                                </li>
+                            </ol>
+                        </div>
+
+                        <div class="theory-section">
+                            <h3>3. Selecting the Ideal RC Time Constant</h3>
+                            <p>Choosing the correct values of R and C is critical for accurate signal recovery. There are two failure states:</p>
+                            
+                            <div class="failure-grid">
+                                <div class="failure-card warning">
+                                    <h4>Diagonal Clipping (RC is too large)</h4>
+                                    <p>If the time constant RC is much larger than the maximum rate of change of the modulating envelope, the capacitor cannot discharge fast enough to follow the envelope. The output decays along a flat exponential slope, clipping the peaks of the message wave.</p>
+                                    <span class="math-expr">RC &gt; 1 / (2π f<sub>m</sub>)</span>
+                                </div>
+
+                                <div class="failure-card info">
+                                    <h4>Poor Filtering / Ripple (RC is too small)</h4>
+                                    <p>If the time constant RC is too small, the capacitor discharges extremely fast between carrier peaks. The output voltage returns to zero or drops heavily before the next carrier cycle, producing a heavily rippled output that tracks the carrier frequency instead of the message envelope.</p>
+                                    <span class="math-expr">RC &lt; 1 / f<sub>c</sub></span>
+                                </div>
+                            </div>
+
+                            <div class="ideal-condition">
+                                <h4><i class="fa-solid fa-circle-check text-accent"></i> The Golden Condition for Ideal Detection:</h4>
+                                <div class="math-equation">
+                                    1 / f<sub>c</sub> &lt;&lt; RC &lt;&lt; 1 / f<sub>m</sub>
+                                </div>
+                                <p>To prevent diagonal clipping and recover the message with minimum distortion, the RC time constant must satisfy: <strong>RC ≤ 1 / (2π f<sub>m</sub> &mu;)</strong> at maximum modulation index.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: LAB MANUAL / GUIDE -->
+            <section id="guide" class="tab-content">
+                <div class="theory-layout">
+                    <div class="card theory-card">
+                        <h2>Lab Experiments Guide</h2>
+                        <hr class="divider">
+                        
+                        <div class="guide-steps">
+                            <h3>Experiment 1: Observing Under-Modulation vs Over-Modulation</h3>
+                            <p>Explore how the ratio of modulating signal to carrier signal affects the transmitted AM wave.</p>
+                            <ol class="guide-list">
+                                <li>Select the <strong>Simulator</strong> tab.</li>
+                                <li>Turn off all channels except the **Message Signal** and **AM Modulated** channels.</li>
+                                <li>Set Carrier Amplitude (A<sub>c</sub>) to <strong>3.0 V</strong>. Set Message Amplitude (A<sub>m</sub>) to <strong>1.5 V</strong>.</li>
+                                <li>Observe the modulation index μ. It should be <strong>0.5</strong>. Observe the envelope of the AM wave. It tracks the message signal perfectly. This is **under-modulation**.</li>
+                                <li>Now increase Message Amplitude (A<sub>m</sub>) to <strong>4.0 V</strong>. Observe μ. It rises above <strong>1.0</strong>. Look closely at the center nodes of the AM wave: the phases invert and the envelope crosses zero. This is **over-modulation**. Notice the red warning state on the right telemetry panel.</li>
+                            </ol>
+
+                            <h3>Experiment 2: Troubleshooting Envelope Detection</h3>
+                            <p>Understand the critical role of the resistor-capacitor (RC) time constant in demodulating the signal.</p>
+                            <ol class="guide-list">
+                                <li>Configure a clean under-modulated wave (e.g. A<sub>c</sub> = 3.0 V, A<sub>m</sub> = 2.0 V, f<sub>m</sub> = 1.0 Hz, f<sub>c</sub> = 35 Hz).</li>
+                                <li>Turn on the **Detected Envelope v<sub>d</sub>(t)** channel checkbox.</li>
+                                <li>Observe the orange curve. It should closely trace the peaks of the AM wave with tiny carrier ripples.</li>
+                                <li><strong>Diagonal Clipping Simulation:</strong> Slide the **Resistance (R)** to <strong>2000 Ω</strong> and **Capacitance (C)** to <strong>8.0 µF</strong>. The RC constant will rise above 15 ms. Look at the oscilloscope screen: the orange line fails to follow the rapid downward slope of the message envelope. It draws straight lines cutting through the wave. This is **diagonal clipping**.</li>
+                                <li><strong>Excessive Ripple Simulation:</strong> Drop **Resistance (R)** to <strong>50 Ω</strong> and **Capacitance (C)** to <strong>0.2 µF</strong>. The time constant drops to 0.01 ms. The output envelope turns into jagged peaks that fall back to zero instantly between carrier cycles. This is **poor filtering**.</li>
+                                <li>Adjust the sliders to find the "Sweet Spot" where the telemetry panel displays: <span class="badge bg-success">RC time constant is ideal</span>.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- App JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
